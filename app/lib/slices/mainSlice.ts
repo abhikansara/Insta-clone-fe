@@ -2,11 +2,60 @@ import { createSlice, Dispatch } from "@reduxjs/toolkit";
 import axios from "axios";
 import { dispatch } from "../store";
 
-interface userState {
-  userPostDetails: any;
+export interface Root {
+  userDetails: {
+    userPostDetails: UserDetails[];
+  };
 }
 
-const initialState: userState = {
+export interface UserDetails {
+  _id: string;
+  user: User;
+  image: string;
+  description: string;
+  likes: Like[];
+  comments: Comment[];
+  __v: number;
+}
+
+export interface ApiPostDetails {
+  _id: string;
+  user: User;
+  image: Image;
+  description: string;
+  likes: Like[];
+  comments: Comment[];
+  __v: number;
+}
+
+export interface User {
+  id: string;
+  name: string;
+  _id: string;
+}
+
+export interface Image {
+  type: string;
+  data: number[];
+}
+
+export interface Like {
+  likedById: string;
+  _id: string;
+}
+
+export interface Comment {
+  comment: string;
+  author: Author;
+  _id: string;
+}
+
+export interface Author {
+  id: string;
+  name: string;
+  _id: string;
+}
+const initialState = {
   userPostDetails: [],
 };
 
@@ -24,7 +73,7 @@ export const { getAllUsersPost } = userSlice.actions;
 
 export default userSlice.reducer;
 
-const parseImage = (img: any) => {
+const parseImage = (img: ApiPostDetails) => {
   const imageBuffer = img.image?.data;
   const base64String = Buffer.from(imageBuffer).toString("base64");
   const dataURL = `data:image/jpeg;base64,${base64String}`;
@@ -44,18 +93,16 @@ export const getAllPosts = () => {
     .then((res) => {
       const imageArray = res?.data;
 
-      const parsedImages = imageArray?.map((img: any) => {
+      const parsedImages = imageArray?.map((img: ApiPostDetails) => {
         return {
           ...img,
           image: parseImage(img),
         };
       });
 
-      console.log({ parsedImages });
       dispatch(getAllUsersPost(parsedImages));
     })
     .catch((error) => {
       console.log({ error });
     });
 };
-

@@ -4,9 +4,9 @@ import ReturnArrow from "@/components/svgComps/ReturnArrow";
 import { Button } from "@mui/material";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Buffer } from "buffer";
 import { LoadingButton } from "@mui/lab";
 import { useSelector } from "react-redux";
+import { Root, UserDetails, getAllPosts } from "../lib/slices/mainSlice";
 
 function UsersProfile() {
   const [imageSelected, setImageSelected] = React.useState(false);
@@ -14,15 +14,17 @@ function UsersProfile() {
   const [caption, setCaption] = React.useState("");
   const [isLoading, setISLoading] = React.useState(false);
   const [isAddPostShow, setISAddPostShow] = useState(false);
-  const [postsData, setPostsData] = useState<any>([]);
 
   const accessToken = localStorage.getItem("accessToken");
 
   const allPosts = useSelector(
-    (state: any) => state?.userDetails?.userPostDetails
+    (state: Root) => state?.userDetails?.userPostDetails
   );
 
-  const handleSelectedImage = ({ e }: any) => {
+  const handleSelectedImage = (e: {
+    e?: React.ChangeEvent<HTMLInputElement>;
+    target?: any;
+  }) => {
     const fileType = e?.target?.files[0]?.type;
     const imageFile = e?.target?.files[0];
 
@@ -42,14 +44,6 @@ function UsersProfile() {
     } else return;
   };
 
-  const parseImage = (img: any) => {
-    const imageBuffer = img.image?.data;
-    const base64String = Buffer.from(imageBuffer).toString("base64");
-    const dataURL = `data:image/jpeg;base64,${base64String}`;
-
-    return dataURL;
-  };
-
   const handleSubmit = () => {
     setISLoading(true);
     let formData = new FormData();
@@ -67,31 +61,11 @@ function UsersProfile() {
         },
       })
       .then((res) => {
-        getAllPosts();
-      })
-      .catch((error) => {
-        setISLoading(false);
-        console.log({ error });
-      });
-  };
-
-  const getAllPosts = () => {
-    axios
-      .get("https://insta-post-api.onrender.com/posts", {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      })
-      .then((res) => {
-        const imageArray = res?.data;
-
-        const parsedImages = imageArray?.map((img: any) => parseImage(img));
-
-        setPostsData(parsedImages);
-
+        console.log({ res: res.data });
         setISLoading(false);
 
         setISAddPostShow(false);
+        getAllPosts();
       })
       .catch((error) => {
         setISLoading(false);
@@ -103,27 +77,34 @@ function UsersProfile() {
     allPosts && allPosts.length > 0 ? null : getAllPosts();
   }, []);
 
-  console.log({ isAddPostShow, postsData });
   return (
-    <div className={"flex justify-center"}>
-      <Button
-        variant="outlined"
-        onClick={() => setISAddPostShow(!isAddPostShow)}
-      >
-        Create New Post
-      </Button>
-
-      {postsData ? (
+    <div className={"flex justify-center flex-col gap-10 relative"}>
+      <div>
+        <Button
+          variant="outlined"
+          onClick={() => setISAddPostShow(!isAddPostShow)}
+        >
+          Create New Post
+        </Button>
+      </div>
+      {allPosts ? (
         <div style={{ display: "flex", flexWrap: "wrap" }}>
-          {postsData?.map((imgSrc: string) => {
-            return <img src={imgSrc} />;
+          {allPosts?.map((post: UserDetails) => {
+            return (
+              <picture>
+                <img
+                  className="h-[444px] w-[444px] object-cover"
+                  src={post?.image}
+                />
+              </picture>
+            );
           })}
         </div>
       ) : null}
 
       {isAddPostShow && (
         <div
-          className="fixed top-0 z-10 flex h-full w-full cursor-default  items-center justify-center bg-[#0000008f] dark:bg-[#000000d7]"
+          className="absolute top-0 z-10 flex h-full w-full cursor-default  items-center justify-center bg-[#0000008f] dark:bg-[#000000d7]"
           onClick={(e: any) => {
             if (e.target.id === "closeAddPost") setISAddPostShow(false);
           }}

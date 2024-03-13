@@ -6,39 +6,25 @@ import ProfilePicSVG from "@/components/svgComps/ProfilePicSVG";
 import HeartHollow from "@/components/svgComps/HeartHollow";
 import CommentSVG from "@/components/svgComps/CommentSVG";
 import HeartSVG from "@/components/svgComps/HeartSVG";
-import CommentSection from "../CommentSection/page";
 import axios from "axios";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import ArrowSVG from "@/components/svgComps/ArrowSVG";
-import { getAllPosts } from "../lib/slices/mainSlice";
+import { Comment, UserDetails, getAllUsersPost } from "../lib/slices/mainSlice";
 interface Props {
-  username: string;
-  index: number;
+  postData: UserDetails;
+  allPosts: UserDetails[];
 }
 
-const Post = ({ postData }: any) => {
-  console.log({ postData });
-
+const Post = ({ postData, allPosts }: Props) => {
   const accessToken = localStorage.getItem("accessToken");
-
-  const postDetails = {
-    comments: [
-      { avatarURL: "", username: "Abhi", text: "Helo" },
-      { avatarURL: "", username: "Abhi", text: "Helo" },
-      { avatarURL: "", username: "Abhi", text: "Helo" },
-    ],
-    imgURL: "",
-    likes: ["", "", "", ""],
-    createdAt: "",
-  };
-
+  const dispatch = useDispatch();
   const [isPostLiked, setIsPostLiked] = useState<boolean>(false);
-
   const [showCommentBox, setShowCommentBox] = useState<boolean>(false);
-
   const [comment, setComment] = useState<string>("");
 
-  const handleComment = (e: any) => {
+  const handleComment = (e: {
+    target: { value: React.SetStateAction<string> };
+  }) => {
     setComment(e.target.value);
   };
 
@@ -58,7 +44,16 @@ const Post = ({ postData }: any) => {
         }
       )
       .then((res) => {
-        getAllPosts();
+        const updatedPostData = {
+          ...postData,
+          comments: res?.data,
+        };
+
+        const updatedPosts = allPosts?.map((post: UserDetails) => {
+          return post?._id === postData?._id ? updatedPostData : post;
+        });
+
+        dispatch(getAllUsersPost(updatedPosts));
       });
   };
 
@@ -77,7 +72,16 @@ const Post = ({ postData }: any) => {
         }
       )
       .then((res) => {
-        getAllPosts();
+        const updatedPostData = {
+          ...postData,
+          likes: res?.data,
+        };
+
+        const updatedPosts = allPosts?.map((post: UserDetails) => {
+          return post?._id === postData?._id ? updatedPostData : post;
+        });
+
+        dispatch(getAllUsersPost(updatedPosts));
       });
   };
 
@@ -91,7 +95,7 @@ const Post = ({ postData }: any) => {
         </Link>
         <Link href={""}>
           <p className="ml-4 cursor-pointer">
-            {postDetails.comments[0].username}
+            {postData?.user?.name.split("@")[0]}
           </p>
         </Link>
       </div>
@@ -152,7 +156,7 @@ const Post = ({ postData }: any) => {
 
           <div className="flex text-sm">
             {postData.likes.length > 0 ? (
-              <div className="pl-1">
+              <div className="pl-1 py-1">
                 Liked by{" "}
                 <b>
                   {postData.likes.length}{" "}
@@ -179,20 +183,41 @@ const Post = ({ postData }: any) => {
               </div>
             </div>
           ) : null}
-          <button className="mt-3 text-xs text-[#a5a5a5]" type="button">
-            {postDetails.comments.length === 1 &&
-            postDetails.comments[0].text === "" ? (
-              <div>No comments</div>
-            ) : (
-              <div>
-                {postDetails.comments.length === 2 ? (
-                  <p>View the 1st comment</p>
-                ) : (
-                  <p>View all {postDetails.comments.length - 1} comments</p>
-                )}
+
+          <div>
+            {postData?.comments?.length > 0 ? (
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
+                {postData?.comments?.map((cmt: Comment) => {
+                  return (
+                    <div
+                      style={{
+                        fontSize: "14px",
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontWeight: "600",
+                          marginBottom: "10px",
+                          paddingRight: "10px",
+                        }}
+                      >
+                        {postData?.user?.name.split("@")[0]}
+                      </span>
+                      {cmt?.comment}
+                    </div>
+                  );
+                })}
               </div>
+            ) : (
+              <p>No comments</p>
             )}
-          </button>
+          </div>
+
           <p className="pt-2 text-xs text-[#a5a5a5]">
             {new Date().toDateString()}
           </p>
