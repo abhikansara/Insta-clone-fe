@@ -21,10 +21,7 @@ function UsersProfile() {
     (state: Root) => state?.userDetails?.userPostDetails
   );
 
-  const handleSelectedImage = (e: {
-    e?: React.ChangeEvent<HTMLInputElement>;
-    target?: any;
-  }) => {
+  const handleSelectedImage = ({ e }: any) => {
     const fileType = e?.target?.files[0]?.type;
     const imageFile = e?.target?.files[0];
 
@@ -61,7 +58,7 @@ function UsersProfile() {
         },
       })
       .then((res) => {
-        console.log({ res: res.data });
+        getAllPosts();
         setISLoading(false);
 
         setISAddPostShow(false);
@@ -69,7 +66,6 @@ function UsersProfile() {
       })
       .catch((error) => {
         setISLoading(false);
-        console.log({ error });
       });
   };
 
