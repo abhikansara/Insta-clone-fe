@@ -1,23 +1,15 @@
 import React from "react";
 
-function CloseBtnSVG({
-  lightColor,
-  darkColor,
-  heightWidth,
-}: {
-  lightColor: string;
-  darkColor: string;
-  heightWidth: string;
-}) {
+function CloseBtnSVG() {
   return (
     <svg
       id="close"
       aria-label="Close"
-      color={lightColor}
-      height={heightWidth}
+      color={"#f1f5f9"}
+      height={20}
       role="img"
       viewBox="0 0 24 24"
-      width={heightWidth}
+      width={20}
     >
       <polyline
         id="close"

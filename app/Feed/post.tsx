@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/click-events-have-key-events */
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -18,7 +17,9 @@ interface Props {
 const Post = ({ postData, allPosts }: Props) => {
   const accessToken = localStorage.getItem("accessToken");
   const dispatch = useDispatch();
-  const [isPostLiked, setIsPostLiked] = useState<boolean>(false);
+  const [isPostLiked, setIsPostLiked] = useState<boolean>(
+    postData?.likedByUser
+  );
   const [showCommentBox, setShowCommentBox] = useState<boolean>(false);
   const [comment, setComment] = useState<string>("");
 
@@ -32,7 +33,7 @@ const Post = ({ postData, allPosts }: Props) => {
     setComment("");
     axios
       .post(
-        "https://insta-post-api.onrender.com/comment",
+        `${process.env.NEXT_PUBLIC_API_URL}/comment`,
         {
           postId: postData?._id,
           comment: comment,
@@ -61,7 +62,7 @@ const Post = ({ postData, allPosts }: Props) => {
     setIsPostLiked(!isPostLiked);
     axios
       .put(
-        "https://insta-post-api.onrender.com/like",
+        `${process.env.NEXT_PUBLIC_API_URL}/like`,
         {
           postId: postData?._id,
         },
@@ -90,7 +91,7 @@ const Post = ({ postData, allPosts }: Props) => {
       <div className="ml-3 flex items-center py-3">
         <Link href={""}>
           <div className="h-8 w-8 cursor-pointer select-none rounded-full">
-            <ProfilePicSVG strokeWidth="1" />
+            <ProfilePicSVG />
           </div>
         </Link>
         <Link href={""}>
@@ -115,13 +116,7 @@ const Post = ({ postData, allPosts }: Props) => {
           <div className="mb-3 flex gap-4">
             <button id="like" type="button" onClick={handleLikePost}>
               <div className="group">
-                <div>
-                  {isPostLiked ? (
-                    <HeartSVG fillColor="#ed4956" height="24" width="24" />
-                  ) : (
-                    <HeartHollow />
-                  )}
-                </div>
+                <div>{isPostLiked ? <HeartSVG /> : <HeartHollow />}</div>
               </div>
             </button>
             <button
@@ -131,12 +126,7 @@ const Post = ({ postData, allPosts }: Props) => {
             >
               <div className="group">
                 <div>
-                  <CommentSVG
-                    outline={"#262626"}
-                    height="24"
-                    width="24"
-                    fill="none"
-                  />
+                  <CommentSVG />
                 </div>
               </div>
             </button>
@@ -179,7 +169,7 @@ const Post = ({ postData, allPosts }: Props) => {
                 className="absolute h-[20px] w-[20px] right-[10px] cursor-pointer"
                 onClick={handleCommentSubmit}
               >
-                <ArrowSVG white={false} />
+                <ArrowSVG />
               </div>
             </div>
           ) : null}

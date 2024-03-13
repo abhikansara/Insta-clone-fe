@@ -5,6 +5,7 @@ import { dispatch } from "../store";
 export interface Root {
   userDetails: {
     userPostDetails: UserDetails[];
+    isPostCreated: boolean;
   };
 }
 
@@ -16,6 +17,7 @@ export interface UserDetails {
   likes: Like[];
   comments: Comment[];
   __v: number;
+  likedByUser: boolean;
 }
 
 export interface ApiPostDetails {
@@ -26,6 +28,7 @@ export interface ApiPostDetails {
   likes: Like[];
   comments: Comment[];
   __v: number;
+  likedByUser: boolean;
 }
 
 export interface User {
@@ -57,6 +60,7 @@ export interface Author {
 }
 const initialState = {
   userPostDetails: [],
+  isPostCreated: false,
 };
 
 const userSlice = createSlice({
@@ -66,10 +70,13 @@ const userSlice = createSlice({
     getAllUsersPost(state, action) {
       state.userPostDetails = action.payload;
     },
+    setIsPostCreated(state, action) {
+      state.isPostCreated = action.payload;
+    },
   },
 });
 
-export const { getAllUsersPost } = userSlice.actions;
+export const { getAllUsersPost, setIsPostCreated } = userSlice.actions;
 
 export default userSlice.reducer;
 
@@ -84,8 +91,10 @@ const parseImage = (img: ApiPostDetails) => {
 export const getAllPosts = () => {
   const accessToken = localStorage.getItem("accessToken");
 
+  dispatch(setIsPostCreated(true));
+
   axios
-    .get("https://insta-post-api.onrender.com/posts", {
+    .get(`${process.env.NEXT_PUBLIC_API_URL}/posts`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
@@ -101,6 +110,7 @@ export const getAllPosts = () => {
       });
 
       dispatch(getAllUsersPost(parsedImages));
+      dispatch(setIsPostCreated(false));
     })
     .catch((error) => {
       console.log({ error });

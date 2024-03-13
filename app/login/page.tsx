@@ -24,7 +24,7 @@ export default function Login() {
   const onsubmit: SubmitHandler<FieldValues> = (data) => {
     setLoading(true);
     axios
-      .post("https://insta-post-api.onrender.com/login", {
+      .post(`${process.env.NEXT_PUBLIC_API_URL}/login`, {
         email: data?.email,
         password: data?.password,
       })
@@ -32,7 +32,6 @@ export default function Login() {
         setLoading(false);
 
         if (res && res.status === 200) {
-          console.log(res);
           setIsLogin(true);
           localStorage.setItem("accessToken", res?.data?.token);
         } else {
@@ -40,7 +39,6 @@ export default function Login() {
         }
       })
       .catch((error) => {
-        console.log({ error });
         setIsLogin(false);
         setLoading(false);
       });
@@ -61,7 +59,7 @@ export default function Login() {
         <div>
           <div className="flex w-[350px] flex-col items-center justify-center border border-stone-300 bg-white">
             <div className="h-auto w-[175px] py-10">
-              <InstagramSVG disableDarkMode white={false} />
+              <InstagramSVG />
             </div>
             <div className="w-full px-5 sm:px-10">
               <form

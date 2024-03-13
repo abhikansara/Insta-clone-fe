@@ -1,7 +1,7 @@
 import CloseBtnSVG from "@/components/svgComps/CloseBtnSVG";
 import DragPhotosVideos from "@/components/svgComps/DragPhotosVideos";
 import ReturnArrow from "@/components/svgComps/ReturnArrow";
-import { Button } from "@mui/material";
+import { Box, Button, CircularProgress } from "@mui/material";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { LoadingButton } from "@mui/lab";
@@ -21,6 +21,10 @@ function UsersProfile() {
     (state: Root) => state?.userDetails?.userPostDetails
   );
 
+  const isPostCreated = useSelector(
+    (state: Root) => state?.userDetails?.isPostCreated
+  );
+
   const handleSelectedImage = ({ e }: any) => {
     const fileType = e?.target?.files[0]?.type;
     const imageFile = e?.target?.files[0];
@@ -35,8 +39,6 @@ function UsersProfile() {
       ) {
         setSelectedImage(imageFile);
         setImageSelected(true);
-      } else {
-        console.log("please only use .png, .jpg, .jpeg file types");
       }
     } else return;
   };
@@ -45,13 +47,11 @@ function UsersProfile() {
     setISLoading(true);
     let formData = new FormData();
 
-    console.log({ selectedImage });
-
     formData.append("file", selectedImage);
     formData.append("description", caption);
 
     axios
-      .post("https://insta-post-api.onrender.com/posts", formData, {
+      .post(`${process.env.NEXT_PUBLIC_API_URL}/posts`, formData, {
         headers: {
           " Content-Type": "multipart/form-data",
           Authorization: `Bearer ${accessToken}`,
@@ -60,7 +60,7 @@ function UsersProfile() {
       .then((res) => {
         getAllPosts();
         setISLoading(false);
-
+        setSelectedImage(undefined);
         setISAddPostShow(false);
         getAllPosts();
       })
@@ -83,7 +83,13 @@ function UsersProfile() {
           Create New Post
         </Button>
       </div>
-      {allPosts ? (
+      {isPostCreated ? (
+        <Box sx={{ display: "flex", justifyContent: "center" }}>
+          <CircularProgress />
+        </Box>
+      ) : null}
+
+      {!isPostCreated && allPosts ? (
         <div style={{ display: "flex", flexWrap: "wrap" }}>
           {allPosts?.map((post: UserDetails) => {
             return (
@@ -100,7 +106,11 @@ function UsersProfile() {
 
       {isAddPostShow && (
         <div
-          className="absolute top-0 z-10 flex h-full w-full cursor-default  items-center justify-center bg-[#0000008f] dark:bg-[#000000d7]"
+          className={`absolute z-10 flex h-full w-full cursor-default  ${
+            allPosts?.length > 0
+              ? "items-start top-[76px]"
+              : "items-center top-0"
+          } justify-center bg-[#0000008f] dark:bg-[#000000d7]`}
           onClick={(e: any) => {
             if (e.target.id === "closeAddPost") setISAddPostShow(false);
           }}
@@ -114,11 +124,7 @@ function UsersProfile() {
               type="button"
               onClick={() => setISAddPostShow(false)}
             >
-              <CloseBtnSVG
-                lightColor="#f1f5f9"
-                darkColor="#f1f5f9"
-                heightWidth="20"
-              />
+              <CloseBtnSVG />
             </button>
             <div className="w-[444px] flex-col overflow-hidden rounded-xl bg-white dark:border dark:border-stone-300 dark:bg-[#000000]">
               {imageSelected ? (

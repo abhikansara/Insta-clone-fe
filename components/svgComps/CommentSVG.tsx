@@ -1,26 +1,16 @@
-function CommentSVG({
-  outline,
-  height,
-  width,
-  fill,
-}: {
-  outline: string;
-  height: string;
-  width: string;
-  fill: string;
-}) {
+function CommentSVG() {
   return (
     <svg
       aria-label="Comment"
-      color={outline}
-      height={height}
+      color={"#262626"}
+      height={"24"}
       role="img"
       viewBox="0 0 24 24"
-      width={width}
+      width={"24"}
     >
       <path
         d="M20.656 17.008a9.993 9.993 0 10-3.59 3.615L22 22z"
-        fill={fill}
+        fill={"none"}
         stroke="currentColor"
         strokeLinejoin="round"
         strokeWidth="2"

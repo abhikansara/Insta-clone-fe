@@ -1,23 +1,14 @@
-function HeartSVG({
-  fillColor,
-  height,
-  width,
-}: {
-  fillColor: string;
-  height: string;
-  width: string;
-}) {
+function HeartSVG() {
   return (
     <div id="unlike">
       <svg
         id="unlike"
         aria-label="heart"
-        // color="white"
-        fill={fillColor}
-        height={height}
+        fill={"#ed4956"}
+        height={"24"}
         role="img"
         viewBox="0 0 48 48"
-        width={width}
+        width={"24"}
       >
         <path
           id="unlike"

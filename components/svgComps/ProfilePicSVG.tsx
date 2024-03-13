@@ -1,15 +1,13 @@
 import React from "react";
-function ProfilePicSVG({ strokeWidth }: { strokeWidth: string }) {
+function ProfilePicSVG() {
   return (
     <svg
       id="avatarDropDown"
       aria-label="Profile"
       color={"#262626"}
       fill={"#262626"}
-      // height={height}
       role="img"
       viewBox="0 0 24 24"
-      // width={width}
     >
       <circle
         id="avatarDropDown"
@@ -20,7 +18,7 @@ function ProfilePicSVG({ strokeWidth }: { strokeWidth: string }) {
         stroke="currentColor"
         strokeLinecap="round"
         strokeMiterlimit="10"
-        strokeWidth={strokeWidth}
+        strokeWidth={"1"}
       />
       <path
         d="M18.793 20.014a6.08 6.08 0 00-1.778-2.447 3.991 3.991 0 00-2.386-.791H9.38a3.994 3.994 0 00-2.386.791 6.09 6.09 0 00-1.779 2.447"
@@ -28,7 +26,7 @@ function ProfilePicSVG({ strokeWidth }: { strokeWidth: string }) {
         stroke="currentColor"
         strokeLinecap="round"
         strokeMiterlimit="10"
-        strokeWidth={strokeWidth}
+        strokeWidth={"1"}
       />
       <circle
         cx="12.006"
@@ -38,7 +36,7 @@ function ProfilePicSVG({ strokeWidth }: { strokeWidth: string }) {
         stroke="currentColor"
         strokeLinecap="round"
         strokeMiterlimit="10"
-        strokeWidth={strokeWidth}
+        strokeWidth={"1"}
       />
     </svg>
   );
